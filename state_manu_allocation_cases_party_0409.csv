@@ -1,0 +1,103 @@
+state1,state2,manufacturer,allocation,cases,report_rate,party
+Alabama,AL,moderna,603400 ,18 ,0.0030%,REPUBLICAN
+Alaska,AK,moderna,134000 ,1 ,0.0007%,REPUBLICAN
+Arizona,AZ,moderna,855200 ,28 ,0.0033%,DEMOCRAT
+Arkansas,AR,moderna,366000 ,4 ,0.0011%,REPUBLICAN
+California,CA,moderna,4812300 ,120 ,0.0025%,DEMOCRAT
+Colorado,CO,moderna,684300 ,17 ,0.0025%,DEMOCRAT
+Connecticut,CT,moderna,453100 ,22 ,0.0049%,DEMOCRAT
+Delaware,DE,moderna,120100 ,3 ,0.0025%,DEMOCRAT
+District of Columbia,DC,moderna,90900 ,1 ,0.0011%,DEMOCRAT
+Florida,FL,moderna,2632300 ,102 ,0.0039%,REPUBLICAN
+Georgia,GA,moderna,1247800 ,23 ,0.0018%,DEMOCRAT
+Hawaii,HI,moderna,179500 ,6 ,0.0033%,DEMOCRAT
+Idaho,ID,moderna,200400 ,5 ,0.0025%,REPUBLICAN
+Illinois,IL,moderna,1249000 ,44 ,0.0035%,DEMOCRAT
+Indiana,IN,moderna,811100 ,14 ,0.0017%,REPUBLICAN
+Iowa,IA,moderna,384900 ,17 ,0.0044%,REPUBLICAN
+Kansas,KS,moderna,351600 ,1 ,0.0003%,REPUBLICAN
+Kentucky,KY,moderna,549200 ,16 ,0.0029%,REPUBLICAN
+Louisiana,LA,moderna,569400 ,7 ,0.0012%,REPUBLICAN
+Maine,ME,moderna,173400 ,4 ,0.0023%,DEMOCRAT
+Maryland,MD,moderna,746300 ,19 ,0.0025%,DEMOCRAT
+Massachusetts,MA,moderna,872900 ,37 ,0.0042%,DEMOCRAT
+Michigan,MI,moderna,1242600 ,22 ,0.0018%,DEMOCRAT
+Minnesota,MN,moderna,680400 ,15 ,0.0022%,DEMOCRAT
+Mississippi,MS,moderna,363600 ,6 ,0.0017%,REPUBLICAN
+Missouri,MO,moderna,753200 ,6 ,0.0008%,REPUBLICAN
+Montana,MT,moderna,131600 ,2 ,0.0015%,REPUBLICAN
+Nebraska,NE,moderna,232500 ,11 ,0.0047%,REPUBLICAN
+Nevada,NV,moderna,360500 ,12 ,0.0033%,DEMOCRAT
+New Hampshire,NH,moderna,173500 ,5 ,0.0029%,DEMOCRAT
+New Jersey,NJ,moderna,1106000 ,52 ,0.0047%,DEMOCRAT
+New Mexico,NM,moderna,259300 ,11 ,0.0042%,DEMOCRAT
+New York,NY,moderna,1408300 ,82 ,0.0058%,DEMOCRAT
+North Carolina,NC,moderna,1258800 ,42 ,0.0033%,REPUBLICAN
+North Dakota,ND,moderna,94900 ,4 ,0.0042%,REPUBLICAN
+Ohio,OH,moderna,1444000 ,43 ,0.0030%,REPUBLICAN
+Oklahoma,OK,moderna,474400 ,11 ,0.0023%,REPUBLICAN
+Oregon,OR,moderna,516500 ,10 ,0.0019%,DEMOCRAT
+Pennsylvania,PA,moderna,1422400 ,38 ,0.0027%,DEMOCRAT
+Rhode Island,RI,moderna,136500 ,3 ,0.0022%,DEMOCRAT
+South Carolina,SC,moderna,618100 ,8 ,0.0013%,REPUBLICAN
+South Dakota,SD,moderna,105000 ,4 ,0.0038%,REPUBLICAN
+Tennessee,TN,moderna,824800 ,16 ,0.0019%,REPUBLICAN
+Texas,TX,moderna,3295300 ,76 ,0.0023%,REPUBLICAN
+Utah,UT,moderna,342900 ,2 ,0.0006%,REPUBLICAN
+Vermont,VT,moderna,82200 ,2 ,0.0024%,DEMOCRAT
+Virginia,VA,moderna,1047700 ,24 ,0.0023%,DEMOCRAT
+Washington,WA,moderna,916400 ,24 ,0.0026%,DEMOCRAT
+West Virginia,WV,moderna,233900 ,5 ,0.0021%,REPUBLICAN
+Wisconsin,WI,moderna,722700 ,23 ,0.0032%,DEMOCRAT
+Wyoming,WY,moderna,72200 ,1 ,0.0014%,REPUBLICAN
+Alabama,AL,pfizer,613860 ,61 ,0.0099%,REPUBLICAN
+Alaska,AK,pfizer,143520 ,16 ,0.0111%,REPUBLICAN
+Arizona,AZ,pfizer,871260 ,139 ,0.0160%,DEMOCRAT
+Arkansas,AR,pfizer,377130 ,44 ,0.0117%,REPUBLICAN
+California,CA,pfizer,4872270 ,458 ,0.0094%,DEMOCRAT
+Colorado,CO,pfizer,699465 ,65 ,0.0093%,DEMOCRAT
+Connecticut,CT,pfizer,467220 ,87 ,0.0186%,DEMOCRAT
+Delaware,DE,pfizer,130260 ,20 ,0.0154%,DEMOCRAT
+District of Columbia,DC,pfizer,99645 ,6 ,0.0060%,DEMOCRAT
+Florida,FL,pfizer,2666430 ,396 ,0.0149%,REPUBLICAN
+Georgia,GA,pfizer,1269840 ,128 ,0.0101%,DEMOCRAT
+Hawaii,HI,pfizer,189540 ,20 ,0.0106%,DEMOCRAT
+Idaho,ID,pfizer,208650 ,12 ,0.0058%,REPUBLICAN
+Illinois,IL,pfizer,1271790 ,166 ,0.0131%,DEMOCRAT
+Indiana,IN,pfizer,826605 ,97 ,0.0117%,REPUBLICAN
+Iowa,IA,pfizer,395265 ,9 ,0.0023%,REPUBLICAN
+Kansas,KS,pfizer,364260 ,41 ,0.0113%,REPUBLICAN
+Kentucky,KY,pfizer,565695 ,48 ,0.0085%,REPUBLICAN
+Louisiana,LA,pfizer,585780 ,81 ,0.0138%,REPUBLICAN
+Maine,ME,pfizer,180180 ,11 ,0.0061%,DEMOCRAT
+Maryland,MD,pfizer,762060 ,83 ,0.0109%,DEMOCRAT
+Massachusetts,MA,pfizer,889200 ,169 ,0.0190%,DEMOCRAT
+Michigan,MI,pfizer,1261260 ,216 ,0.0171%,DEMOCRAT
+Minnesota,MN,pfizer,693225 ,97 ,0.0140%,DEMOCRAT
+Mississippi,MS,pfizer,372060 ,29 ,0.0078%,REPUBLICAN
+Missouri,MO,pfizer,769470 ,121 ,0.0157%,REPUBLICAN
+Montana,MT,pfizer,139815 ,19 ,0.0136%,REPUBLICAN
+Nebraska,NE,pfizer,240630 ,9 ,0.0037%,REPUBLICAN
+Nevada,NV,pfizer,370890 ,35 ,0.0094%,DEMOCRAT
+New Hampshire,NH,pfizer,180180 ,12 ,0.0067%,DEMOCRAT
+New Jersey,NJ,pfizer,1124760 ,177 ,0.0157%,DEMOCRAT
+New Mexico,NM,pfizer,269100 ,45 ,0.0167%,DEMOCRAT
+New York,NY,pfizer,1429545 ,336 ,0.0235%,DEMOCRAT
+North Carolina,NC,pfizer,1281540 ,210 ,0.0164%,REPUBLICAN
+North Dakota,ND,pfizer,100815 ,6 ,0.0060%,REPUBLICAN
+Ohio,OH,pfizer,1468935 ,136 ,0.0093%,REPUBLICAN
+Oklahoma,OK,pfizer,488475 ,64 ,0.0131%,REPUBLICAN
+Oregon,OR,pfizer,530010 ,45 ,0.0085%,DEMOCRAT
+Pennsylvania,PA,pfizer,1443585 ,234 ,0.0162%,DEMOCRAT
+Rhode Island,RI,pfizer,142155 ,18 ,0.0127%,DEMOCRAT
+South Carolina,SC,pfizer,631605 ,76 ,0.0120%,REPUBLICAN
+South Dakota,SD,pfizer,115245 ,12 ,0.0104%,REPUBLICAN
+Tennessee,TN,pfizer,841425 ,134 ,0.0159%,REPUBLICAN
+Texas,TX,pfizer,3338595 ,243 ,0.0073%,REPUBLICAN
+Utah,UT,pfizer,351975 ,20 ,0.0057%,REPUBLICAN
+Vermont,VT,pfizer,91845 ,8 ,0.0087%,DEMOCRAT
+Virginia,VA,pfizer,1065285 ,121 ,0.0114%,DEMOCRAT
+Washington,WA,pfizer,948285 ,72 ,0.0076%,DEMOCRAT
+West Virginia,WV,pfizer,240630 ,23 ,0.0096%,REPUBLICAN
+Wisconsin,WI,pfizer,739830 ,89 ,0.0120%,DEMOCRAT
+Wyoming,WY,pfizer,78390 ,2 ,0.0026%,REPUBLICAN
