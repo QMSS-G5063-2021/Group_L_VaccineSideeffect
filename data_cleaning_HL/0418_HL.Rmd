@@ -73,9 +73,9 @@ geom_bar(stat = 'identity')+
   labs(x = "State", y = "Allocation (10k)", 
        title = "Vaccine allocation of Pfizer and Moderna - by state")+
   theme_light()+
-  scale_color_manual(values = c('cyan','orange'),
+  scale_color_manual(values = c('purple','orange'),
                      breaks = c('pfizer','moderna'))+
-  scale_fill_manual(values = c('cyan','orange'),
+  scale_fill_manual(values = c('purple','orange'),
                      breaks = c('pfizer','moderna'))+
   coord_flip()
 
@@ -100,7 +100,7 @@ alo.g <- left_join(us_states, allocation, by = c('state' = 'state1'))
 
 ggplot(data = alo.g, aes(x = long, y = lat, group = group))+
   geom_polygon(aes(fill = allocation), color = "black")+
-  scale_fill_distiller(type = "seq", palette = "Greens",
+  scale_fill_distiller(type = "seq", palette = "PuOr",
                      breaks = seq(0, 700, by = 100),
                      limits = c(0, 700),
                      direction = "horizontal")+
@@ -153,17 +153,21 @@ rate.sp <- states.sp
 rate.sp@data<-rate.sp@data %>%
   left_join(case_vac, by = c('NAME' = 'state1'))
 
+sub.d<-subset(rate.sp, party == 'DEMOCRAT' )
+sub.r<-subset(rate.sp, party == 'REPUBLICAN' )
+
 #pop up content
 rate.popup.content <- paste("State:",rate.sp@data$NAME ,"<br/>",
                  "Report rate:",round(rate.sp@data$rate,2),"per 100k vaccined" ,"<br/>",
                  "Party:",rate.sp@data$party ,"<br/>")
 
-#
-pal.rate.party = colorFactor(c("Blue","Red"), domain = rate.sp@data$party) 
-color.rate.party = pal.rate.party(rate.sp@data$party)
+rate.popup.content.d <- paste("State:",sub.d@data$NAME ,"<br/>",
+                 "Report rate:",round(sub.d@data$rate,2),"per 100k vaccined" ,"<br/>",
+                 "Party:",sub.d@data$party ,"<br/>")
 
-pal.manu = colorFactor(c("Cyan","Orange"), domain = rate.sp@data$manufacturer) 
-color.manu = pal.manu(rate.sp@data$manufacturer)
+rate.popup.content.r <- paste("State:",sub.r@data$NAME ,"<br/>",
+                 "Report rate:",round(sub.r@data$rate,2),"per 100k vaccined" ,"<br/>",
+                 "Party:",sub.r@data$party ,"<br/>")
 
 #
 leaflet() %>%
@@ -176,24 +180,21 @@ setView(lat = 37, lng = -95, zoom = 4) %>%
             weight=1,
             color = '#333333',
             opacity=1,
-            
-            fillColor = ~colorQuantile("YlGn", rate)(rate), 
-            
-            # fillColor = color.rate.party,
+            fillColor = ~colorQuantile("Oranges", rate)(rate), 
             fillOpacity = 1,
             popup = rate.popup.content) %>%
   
   
   addPolygons(group="Democrat",
              data=subset(rate.sp, party == 'DEMOCRAT' ),
-             popup = rate.popup.content,
+             popup = rate.popup.content.d,
              opacity = 1.0, stroke = TRUE,
              color = "blue", weight=1) %>%
   
   
   addPolygons(group="Republican",
              data=subset(rate.sp, party == 'REPUBLICAN' ),
-             popup = rate.popup.content,
+             popup = rate.popup.content.r,
              opacity = 1.0, stroke = TRUE,
              color = "red", weight=1) %>%
   
@@ -226,9 +227,9 @@ geom_bar(stat = "identity", position = position_dodge())+
        title = "Side effect cases reported of Pfizer and Moderna - by state")+
   theme_light()+
   
-  scale_color_manual(values = c('cyan','orange'),
+  scale_color_manual(values = c('purple','orange'),
                      breaks = c('pfizer','moderna'))+
-  scale_fill_manual(values = c('cyan','orange'),
+  scale_fill_manual(values = c('purple','orange'),
                      breaks = c('pfizer','moderna'))+
 
     coord_flip()
@@ -276,8 +277,8 @@ setView(lat = 37, lng = -95, zoom = 4) %>%
             weight=1,
             color = '#333333',
             opacity=1,
-            fillColor = ~colorQuantile("GnBu", case_manu)(case_manu), 
-            fillOpacity = 1,
+            fillColor = ~colorQuantile("Purples", case_manu)(case_manu), 
+            fillOpacity = 0.5,
             popup = cm.p.popup.content) %>%
   
   addPolygons(group="moderna",
@@ -287,8 +288,8 @@ setView(lat = 37, lng = -95, zoom = 4) %>%
             weight=1,
             color = '#333333',
             opacity=1,
-            fillColor = ~colorQuantile("OrRd", case_manu)(case_manu), 
-            fillOpacity = 1,
+            fillColor = ~colorQuantile("Oranges", case_manu)(case_manu), 
+            fillOpacity = 0.5,
             popup = cm.m.popup.content) %>%
 
   
