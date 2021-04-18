@@ -1,0 +1,98 @@
+---
+title: "wordcloud"
+author: "Qinyue Hao"
+date: "2021/4/9"
+output: html_document
+---
+---
+title: "wordcloud"
+author: "Qinyue Hao"
+date: "2021/4/9"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = F, warning = F)
+```
+
+```{r}
+library(dplyr)
+library(tm)
+library(stopwords)
+library(tidytext)
+library(wordcloud)
+library(tidyverse)
+library(hunspell)
+# library(RColorBrewer)
+
+setwd("C:\\Users\\hjm\\Desktop\\TO DO\\DVfinal")
+# tweet <- read.csv("vaccination_all_tweets_ansi.csv")
+load(".RData")
+```
+
+```{r}
+
+# str(tt)
+# all oringinal tweets
+
+# clean text
+tt <- tweet[,c("id","text")]
+tt <- rename(tt, "doc_id" = 'id')
+tt$text <- as.character(tt$text)
+# make a corpus
+library(tm)
+tt_source <- DataframeSource(tt)
+tt_corpus <- VCorpus(tt_source)
+tt_corpus
+
+
+library(stopwords)
+# preprocessing function----
+clean_corpus <- function(corpus){
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, removeWords, c(stopwords(source = "smart")))
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, stripWhitespace)
+  return(corpus)
+}
+# preprocessing
+tt_clean <- clean_corpus(tt_corpus)
+tt_dtm <- DocumentTermMatrix(tt_clean)
+
+library(tidytext)
+tt_tidy <- tidy(tt_dtm)
+# mannually remove residual unwanted words
+tt_tidy <- tt_tidy %>% 
+  filter(grepl("[a-z]*\\…",term) == F) %>% 
+  filter(grepl("http([a-z]*[A-Z]*[0-9]*)*",term) == F) %>% 
+  filter(term != "the") %>% 
+  filter(term != "this") %>% 
+  group_by(term) %>% 
+  mutate(n=n()) %>% 
+  arrange(desc(n))
+
+tt_tidy$term2 <- hunspell::hunspell_stem(tt_tidy$term,"en_US")
+ttt <- tt_tidy
+ttt$term2 <- lapply(ttt$term2, function(x) if(identical(x, character(0))) NA_character_ else x)
+stem1 <- ttt %>% 
+  ungroup() %>% 
+  mutate(index = row_number())%>% 
+  unnest(term2)
+stem1 <- stem1 %>% mutate(term3 = ifelse(is.na(term2),term,term2))
+stemmed <- stem1[c(1,7,3)] %>% 
+  rename(term = term3) %>% 
+  group_by(term) %>% 
+  mutate(n = sum(count)) %>% 
+  arrange(desc(n))
+```
+
+```{r wordcloud}
+# plot word cloud
+library(wordcloud)
+set.seed(377)
+library(RColorBrewer)
+reds <- brewer.pal(5, "RdPu")
+stemmed_p <- unique(stemmed[c(2,4)]) # dataset for plotting
+wordcloud(stemmed_p$term,stemmed_p$n,
+          max.words = 500, color=reds, scale=c(3.5,0.5),min.freq = 500)
+```
+

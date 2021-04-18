@@ -1,0 +1,143 @@
+---
+title: "co-occurence network"
+author: "Qinyue Hao"
+date: "2021/4/16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = F, warning = F)
+```
+
+```{r}
+library(tidyverse)
+library(tidyr)
+# library(dplyr)
+library(rlist)
+library(igraph)
+library(ggnetwork)
+library(networkD3)
+
+setwd("C:\\Users\\hjm\\Desktop\\TO DO\\DVfinal")
+# make an co-occurence matrix
+load("term_stemmed_all.RData")
+# list1k <- stemmed[,c(2,4)] %>% unique() %>% arrange(desc(n)) %>% head(1000) #n>=67
+# top1k <- stemmed %>% filter(term %in% list1k$term)
+# words <- top1k[,c(2,1)]
+# 
+# cooc <- merge(words,words,by='document')
+# cooc <- cooc %>% 
+#   filter(term.x != term.y) %>% # remove one's relation with it self
+#   count(term.x,term.y) # times of co-ocurrence
+# cooc <- cooc %>% arrange(desc(n))
+# # remove replecate records (undirected edges)
+# cooc <- cooc %>% rename(from=term.x) %>% rename(to=term.y)
+# cooc2 <- cooc %>% filter(n>=100)
+# library(tidyverse)
+# dedup <- cooc2 %>% 
+#   mutate(normalized = map2_chr(from, to, ~paste(sort(c(.x, .y)), 
+#                                                 collapse = ""))) %>%
+#   group_by(normalized,n) %>%
+#   summarise(from = first(from),
+#             to = first(to)) %>%
+#   ungroup() %>% 
+#   select(-normalized) %>% 
+#   arrange(desc(n))
+# uniedge <- dedup[,c(2,3,1)]
+# # save(cooc, file = "coocedge.Rdata")
+# # save(uniedge, file = "uniquedges.Rdata")
+# # library(readr)
+# # write_csv(cooc, path = "coocedge.csv")
+load("coocedge.Rdata")
+load("uniquedges.Rdata")
+```
+
+```{r}
+# make a graph----
+edges <- as.matrix(uniedge)
+g <- graph_from_data_frame(edges, directed = F, vertices = NULL)
+# g
+# calculate indegree and outdegree (centrality)
+V(g)$deg <- degree(g, mode = "total", loops = F, normalized = FALSE)
+# add weight(n) as edge width
+E(g)$width <- E(g)$n
+# as_data_frame(g, what="edges") 
+# g
+# plot(g)
+```
+
+```{r}
+# prepare data for plotting----
+library(ggnetwork)
+set.seed(12)
+# class(g)
+# summary(g)
+df <- ggnetwork(g,layout = with_kk())
+# df
+att <- rename(unique(stemmed[,c(2,4)]),name = term)
+df <- left_join(df,att,by="name")
+df$width <- as.numeric(df$width)/100
+
+#find clusters
+wc <- cluster_walktrap(g,weights = E(g)$width)  # find "communities"
+# class(c)
+# sizes(wc)
+members <- membership(wc)
+mm <- as.data.frame(cbind(names(members),members)) %>% rename(.,name=V1) %>% rename(.,cluster=members)
+# ignore tiny groups
+mm_b <- mm %>% group_by(cluster) %>% 
+  mutate(n = n()) %>% 
+  mutate(group = ifelse(n>=5,n,1))
+# summary(as.factor(mm_b$group))
+# name the groups
+mm_b$group <- as.factor(mm_b$group) # numeric to factor
+mm_b$group <- ordered(mm_b$group, levels = c(1,7,23,37,212), labels = c("undefined","group1","group2","group3","group4"))
+mm_b$group <- as.character(mm_b$group)
+df_m <- merge(mm_b,df,by='name')
+
+# # plot the clusters
+# cp <- unique(df_m[,c(1,4)])
+# library(ggthemes)
+# cp %>% ggplot(aes(name,group)) +
+#   geom_jitter(height = 0.2) +
+#   theme_clean() +
+#   labs(title = "Automatically Detected Clusters",
+#        tag = "Figure 2",
+#        y = "cluster") +
+#   theme(axis.text.x = element_blank(),axis.title.x = element_blank()) +
+#   scale_colour_manual(values = c("blue", "green", "red")) +
+#   labs(color='Party')
+
+```
+
+```{r}
+# plotting network
+ggplot(df_m, aes(x, y, xend = xend, yend = yend)) +
+  geom_edges(aes(size = width),alpha = 0.2,color="seashell3",curvature = 0.2) +
+  geom_nodes(data=subset(df_m, group=="undefined"),aes(size=n.y), color = "gray3", alpha = 0.5) + # terms not in big clusters
+  geom_nodes(data=subset(df_m, group=="group1"),aes(size=n.y), color = "darkred", alpha = 0.5) + # group1
+  geom_nodes(data=subset(df_m, group=="group2"),aes(size=n.y), color = "blue4", alpha = 0.5) + # group2
+  geom_nodes(data=subset(df_m, group=="group3"),aes(size=n.y), color = "purple", alpha = 0.5) + # group3
+  geom_nodes(data=subset(df_m, group=="group4"),aes(size=n.y), color = "orange", alpha = 0.5) + # group4
+  geom_nodetext_repel(aes(label = name),size = 2.5) + 
+  theme_blank()
+# no text for central nodes ---- try interactive graph
+
+```
+
+```{r}
+library(networkD3)
+# Convert to object suitable for networkD3
+g_d3 <- igraph_to_networkD3(g, group = members)
+# Create force directed network plot
+forceNetwork(Links = g_d3$links, Nodes = g_d3$nodes, 
+             Source = 'source', Target = 'target', 
+             NodeID = 'name', Group = 'group',
+             fontSize = 50, fontFamily = "Times New Roman",
+             zoom = T)
+# no specifying link width (would look messy)
+```
+
+
+
+
