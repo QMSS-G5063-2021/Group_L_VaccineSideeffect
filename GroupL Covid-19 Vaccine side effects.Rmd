@@ -1,5 +1,5 @@
 ---
-title: "Final Project"
+title: " Covid-19 Vaccine Tweets and Side Effects Report"
 author: "Group L"
 output:
   html_document:
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message
 
 # Overview
 
-For this project, we explored two datasets -- tweets about Covid-19 vaccine and the reported side effects of it.
+For this project, we explored two datasets -- tweets about Covid-19 vaccine and the reported side effects of the vaccine.
 Firstly, we looked into what people are discussing when they tweet about Covid-19 vaccine. Then we narrowed it down to the side effect discussions, to see what's commonly mentioned here and where the tweets were sent.
 Secondly, we focused on the adverse reactions reported from 2020-12-01 to 2021-3-31. The visualization aims to provide an insight into who are the people reporting side effects and how do they compare to the general population; the most common reported symptoms etc. We also analyzed tweets associated with the covid-19 vaccine to see people's attitudes on the vaccine.
 
