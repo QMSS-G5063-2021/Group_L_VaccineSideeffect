@@ -1,0 +1,303 @@
+---
+title: "5063 group project"
+author: "Haogeng Liu"
+date: "2021/4/17"
+output: html_document
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(tidyverse)
+
+library(ggmap)
+library(ggthemes)
+library(tmap)
+library(leaflet)
+library(rgdal)
+library(sp)
+
+library(RColorBrewer)
+
+```
+
+
+
+```{r}
+# # This is the VAERS data - by 2021.03.31
+# VAERSData <- read.csv('data/VAERS_datasets_20210331/2021VAERSData.csv')
+# VAERSSYMPTOMS <- read.csv('data/VAERS_datasets_20210331/2021VAERSSYMPTOMS.csv')
+# VAERSVAX <- read.csv('data/VAERS_datasets_20210331/2021VAERSVAX.csv')
+
+# # daily_admin <- read.csv('data/us-daily-covid-vaccine-doses-administered.csv')
+ 
+# # covid19_vaccinations_in_the_united_states <- read.csv('data/covid19_vaccinations_in_the_united_states.csv')
+ 
+# #vaccine allocation data by state
+# allocation_Pfizer <- read.csv('data/COVID-19_Vaccine_Distribution_Allocations_by_Jurisdiction_-_Pfizer.csv')
+# allocation_Moderna <- read.csv('data/COVID-19_Vaccine_Distribution_Allocations_by_Jurisdiction_-_Moderna.csv')
+
+# # The results of the state elections come from the data provided in the Week 5 lecture.
+# state_party <- read.csv('data/state_party.csv')
+
+```
+
+
+
+```{r message=FALSE, warning=FALSE}
+states.sp <- readOGR(dsn = "data/cb_2018_us_state_5m/cb_2018_us_state_5m.shp")
+# shape file source: https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html
+```
+
+
+
+## 1. Report rate: allocation by state
+
+```{r}
+# This data set is originated from the allocation data set above, including the vaccine allocation of Pfizer and Moderna in 50 states and the District of Columbia before 2021-03-31.
+# The results of the state elections come from the data provided in the Week 5 lecture.
+# The data cleaning process is completed by Excel.
+
+allocation <- read.csv('data/clean/allocation_clean.csv')
+
+allocation$allocation <- allocation$allocation/10000
+
+```
+
+```{r}
+# bar
+p1<-ggplot(allocation, aes(x = state1, y=allocation, 
+                             col = manufacturer , 
+                             fill = manufacturer )) + 
+geom_bar(stat = 'identity')+
+  labs(x = "State", y = "Allocation (10k)", 
+       title = "Vaccine allocation of Pfizer and Moderna - by state")+
+  theme_light()+
+  scale_color_manual(values = c('purple','orange'),
+                     breaks = c('pfizer','moderna'))+
+  scale_fill_manual(values = c('purple','orange'),
+                     breaks = c('pfizer','moderna'))+
+  coord_flip()
+
+
+p1
+```
+
+
+```{r}
+#map
+
+us_states <- map_data("state")
+us_states <- us_states %>%
+  dplyr::select(-subregion) %>%
+  dplyr::rename(state = region)
+us_states$state <- str_to_title(us_states$state) # Change the first letter of state to Uppercase
+
+us_states <- us_states %>%
+  filter(state %in% allocation$state1)
+
+alo.g <- left_join(us_states, allocation, by = c('state' = 'state1'))
+
+ggplot(data = alo.g, aes(x = long, y = lat, group = group))+
+  geom_polygon(aes(fill = allocation), color = "black")+
+  scale_fill_distiller(type = "seq", palette = "Oranges",
+                     breaks = seq(0, 700, by = 100),
+                     limits = c(0, 700),
+                     direction = "horizontal")+
+  facet_grid(manufacturer ~ .)+
+  theme_map()+
+  theme(legend.position = "top")
+
+```
+
+The number of vaccine allocations in each state does not have a brand tendency.
+In every state, the number of vaccine allocations for the two brands is basically the same.
+
+## 2. Report rate: report rate by state & 2020 election result
+
+```{r}
+# This data set is originated from the VAERS data set and the daily vaccinations data set above, including the number of people vaccinated (before 2021-03-31) and the number of side effect case reported (from 2020-12-14 to 2021-03-31) in 50 states and the District of Columbia. 
+# The results of the state elections come from the data provided in the Week 5 lecture.
+# The data cleaning process is completed by Excel.
+
+case_vac <- read.csv('data/clean/case_vac_clean.csv')
+
+# rate represents the proportion of side effects cases per 100,000 people who have been vaccinated
+case_vac <- case_vac %>% 
+  mutate(rate = 100000*case/vaccinations)
+```
+
+```{r}
+# bar
+p2<-ggplot(case_vac, aes(x = state1, y=rate, 
+                             col = party , 
+                             fill = party )) + 
+geom_bar(stat = 'identity')+
+  labs(x = "State", y = "Side effect rate (per 100k vaccinated)", 
+       title = "Side effect rate - by state")+
+  theme_light()+
+  scale_color_manual(values = c('Blue','Red'),
+                     breaks = c('DEMOCRAT','REPUBLICAN'))+
+  scale_fill_manual(values = c('Blue','Red'),
+                     breaks = c('DEMOCRAT','REPUBLICAN'))+
+  coord_flip()
+
+p2
+```
+
+
+```{r}
+# leaflet
+#merge  to the shapefile
+rate.sp <- states.sp
+rate.sp@data<-rate.sp@data %>%
+  left_join(case_vac, by = c('NAME' = 'state1'))
+
+sub.d<-subset(rate.sp, party == 'DEMOCRAT' )
+sub.r<-subset(rate.sp, party == 'REPUBLICAN' )
+
+#pop up content
+rate.popup.content <- paste("State:",rate.sp@data$NAME ,"<br/>",
+                 "Report rate:",round(rate.sp@data$rate,2),"per 100k vaccined" ,"<br/>",
+                 "Party:",rate.sp@data$party ,"<br/>")
+
+rate.popup.content.d <- paste("State:",sub.d@data$NAME ,"<br/>",
+                 "Report rate:",round(sub.d@data$rate,2),"per 100k vaccined" ,"<br/>",
+                 "Party:",sub.d@data$party ,"<br/>")
+
+rate.popup.content.r <- paste("State:",sub.r@data$NAME ,"<br/>",
+                 "Report rate:",round(sub.r@data$rate,2),"per 100k vaccined" ,"<br/>",
+                 "Party:",sub.r@data$party ,"<br/>")
+
+#
+leaflet() %>%
+addProviderTiles("OpenStreetMap.Mapnik") %>%
+setView(lat = 37, lng = -95, zoom = 4) %>%
+  addPolygons(group="rate",
+            data =rate.sp,
+            stroke = TRUE,
+            smoothFactor = 0.5,
+            weight=1,
+            color = '#333333',
+            opacity=1,
+            fillColor = ~colorQuantile("Oranges", rate)(rate), 
+            fillOpacity = 1,
+            popup = rate.popup.content) %>%
+  
+  
+  addPolygons(group="Democrat",
+             data=subset(rate.sp, party == 'DEMOCRAT' ),
+             popup = rate.popup.content.d,
+             opacity = 1.0, stroke = TRUE,
+             color = "blue", weight=1) %>%
+  
+  
+  addPolygons(group="Republican",
+             data=subset(rate.sp, party == 'REPUBLICAN' ),
+             popup = rate.popup.content.r,
+             opacity = 1.0, stroke = TRUE,
+             color = "red", weight=1) %>%
+  
+  addLayersControl(overlayGroups = c("rate","Democrat","Republican"),
+                   options = layersControlOptions(collapsed = FALSE))
+```
+
+The reporting rate of vaccine side effects in each state does not seem to be significantly related to the party's victory in the 2020 election. But New York has the highest reporting rate, more than double that of Montana, the second highest.
+
+
+## 3. Report rate: report rate by manufacturer
+
+```{r}
+# This data set is originated from the VAERS data set above, including the number of side effect case reported (from 2020-12-14 to 2021-03-31) by manufacturer in 50 states and the District of Columbia. 
+# The results of the state elections come from the data provided in the Week 5 lecture.
+# The data cleaning process is completed by Excel.
+
+case_manu <- read.csv('data/clean/case_manu_clean.csv')
+```
+
+
+```{r}
+# bar
+
+p3<-ggplot(case_manu, aes(x = state1, y=case_manu, 
+                             col = manu , 
+                             fill = manu )) + 
+geom_bar(stat = "identity", position = position_dodge())+
+  labs(x = "State", y = "Cases", 
+       title = "Side effect cases reported of Pfizer and Moderna - by state")+
+  theme_light()+
+  
+  scale_color_manual(values = c('purple','orange'),
+                     breaks = c('pfizer','moderna'))+
+  scale_fill_manual(values = c('purple','orange'),
+                     breaks = c('pfizer','moderna'))+
+
+    coord_flip()
+
+p3
+
+```
+
+
+```{r}
+# leaflet
+
+#merge  to the shapefile
+cm.sp.p <- states.sp
+cm.sp.p@data<-cm.sp.p@data %>%
+  left_join(subset(case_manu, manu == "pfizer"), by = c('NAME' = 'state1'))
+
+cm.sp.m <- states.sp
+cm.sp.m@data<-cm.sp.m@data %>%
+  left_join(subset(case_manu, manu == "moderna"), by = c('NAME' = 'state1'))
+
+
+#pop up content
+cm.p.popup.content <- paste("State:",cm.sp.p@data$NAME ,"<br/>",
+                 "Report case:",cm.sp.p@data$case_manu ,"<br/>",
+                 "Manufacturer:",cm.sp.p@data$manu ,"<br/>",
+                 "Party:",cm.sp.p@data$party ,"<br/>")
+
+cm.m.popup.content <- paste("State:",cm.sp.m@data$NAME ,"<br/>",
+                 "Report case:",cm.sp.m@data$case_manu ,"<br/>",
+                 "Manufacturer:",cm.sp.m@data$manu ,"<br/>",
+                 "Party:",cm.sp.m@data$party ,"<br/>")
+
+
+#
+
+leaflet() %>%
+addProviderTiles("OpenStreetMap.Mapnik") %>%
+setView(lat = 37, lng = -95, zoom = 4) %>%
+  
+  addPolygons(group="pfizer",
+            data =cm.sp.p,
+            stroke = TRUE,
+            smoothFactor = 0.5,
+            weight=1,
+            color = '#333333',
+            opacity=1,
+            fillColor = ~colorQuantile("Purples", case_manu)(case_manu), 
+            fillOpacity = 0.5,
+            popup = cm.p.popup.content) %>%
+  
+  addPolygons(group="moderna",
+            data =cm.sp.m,
+            stroke = TRUE,
+            smoothFactor = 0.5,
+            weight=1,
+            color = '#333333',
+            opacity=1,
+            fillColor = ~colorQuantile("Oranges", case_manu)(case_manu), 
+            fillOpacity = 0.5,
+            popup = cm.m.popup.content) %>%
+
+  
+  addLayersControl(overlayGroups = c("pfizer","moderna"),
+                   options = layersControlOptions(collapsed = FALSE))
+
+
+```
+
+According to previous visulizations, there is no significant difference in the number of vaccine allocations between Moderna and Pfizer in each state. However, Pfizer’s vaccine has more reported cases of side effects.
+
